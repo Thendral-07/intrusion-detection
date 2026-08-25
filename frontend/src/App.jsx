@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Sliders, FileSpreadsheet, Layers } from 'lucide-react';
 import InspectorTab from './components/InspectorTab.jsx';
-import BatchAuditTab from './components/BatchAuditTab.jsx';
 import NotebookExplorerTab from './components/NotebookExplorerTab.jsx';
 
 export default function App() {
@@ -80,15 +79,6 @@ export default function App() {
 
         <button
           type="button"
-          className={`broadside-tab ${activeTab === 'batch' ? 'active' : ''}`}
-          onClick={() => setActiveTab('batch')}
-        >
-          <FileSpreadsheet size={16} />
-          <span>Batch & Bulk Log Audit Scanner</span>
-        </button>
-
-        <button
-          type="button"
           className={`broadside-tab ${activeTab === 'analytics' ? 'active' : ''}`}
           onClick={() => setActiveTab('analytics')}
         >
@@ -100,7 +90,6 @@ export default function App() {
       {/* Active Tab View */}
       <main>
         {activeTab === 'inspector' && <InspectorTab globalThreshold={globalThreshold} />}
-        {activeTab === 'batch' && <BatchAuditTab globalThreshold={globalThreshold} />}
         {activeTab === 'analytics' && <NotebookExplorerTab />}
       </main>
 
