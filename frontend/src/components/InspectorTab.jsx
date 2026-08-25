@@ -521,10 +521,10 @@ export default function InspectorTab({ globalThreshold }) {
               {/* Verdict Header Banner */}
               <div
                 style={{
-                  border: `2px solid ${diagnosticResult.is_intrusion ? '#EF4444' : '#10B981'}`,
+                  border: `2px solid ${diagnosticResult.is_intrusion ? 'var(--color-signal)' : 'var(--color-acid)'}`,
                   borderRadius: '4px',
                   padding: '1.5rem 1.25rem',
-                  background: diagnosticResult.is_intrusion ? '#FEF2F2' : '#F0FDF4',
+                  background: diagnosticResult.is_intrusion ? 'var(--color-bg-signal)' : 'var(--color-bg-acid)',
                   textAlign: 'center',
                 }}
               >

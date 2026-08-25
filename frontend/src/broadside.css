@@ -12,6 +12,8 @@
   --color-signal: #ef4444;
   --color-acid: #10b981;
   --color-cobalt: #f59e0b;
+  --color-bg-signal: #fef2f2;
+  --color-bg-acid: #f0fdf4;
   --color-on-signal: #ffffff;
   --color-on-ink: #f8fafc;
   --color-muted: #64748b;
@@ -34,6 +36,8 @@
   --color-signal: #ef4444;
   --color-acid: #10b981;
   --color-cobalt: #f59e0b;
+  --color-bg-signal: #451a1a;
+  --color-bg-acid: #064e3b;
   --color-on-signal: #ffffff;
   --color-on-ink: #0f172a;
   --color-muted: #94a3b8;
@@ -540,8 +544,8 @@ body {
 }
 
 .broadside-card__header--dark {
-  background: var(--color-ink);
-  color: var(--color-on-ink);
+  background: var(--color-stock);
+  color: var(--color-ink);
 }
 
 .broadside-card__header--acid {
