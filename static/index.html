@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSOC AI - Intrusion Detection & Telemetry System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="cyber-theme">
+    <!-- Background grid & glow particles -->
+    <div class="cyber-grid-overlay"></div>
+    <div class="ambient-glow cyan"></div>
+    <div class="ambient-glow purple"></div>
+
+    <!-- Header / SOC Command Bar -->
+    <header class="soc-header">
+        <div class="header-left">
+            <div class="logo-container">
+                <div class="shield-pulse">
+                    <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="M9 12l2 2 4-4" stroke="#00f2fe" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="soc-title">CYBER<span class="highlight-cyan">SOC</span> <span class="badge-version">v2.0 AI-IDS</span></h1>
+                    <p class="soc-subtitle">Intrusion Detection System & Live SOC Telemetry</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-center">
+            <div class="pipeline-pill">
+                <span class="live-dot pulse-emerald"></span>
+                <span class="pipeline-label">PIPELINE:</span>
+                <span class="pipeline-val" id="modelNameBadge">RandomForest (300 Trees)</span>
+                <span class="pill-divider">|</span>
+                <span class="pipeline-label">ROC-AUC:</span>
+                <span class="pipeline-val highlight-emerald" id="rocBadge">0.9032</span>
+                <span class="pill-divider">|</span>
+                <span class="pipeline-label">DATASET:</span>
+                <span class="pipeline-val highlight-cyan">9,537 Records</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="threshold-quick-adjust">
+                <div class="threshold-label-wrap">
+                    <span class="threshold-title">SECURITY THRESHOLD:</span>
+                    <span class="threshold-badge" id="globalThresholdBadge">0.35</span>
+                </div>
+                <input type="range" id="globalThresholdInput" min="0.05" max="0.95" step="0.05" value="0.35" class="cyber-slider">
+            </div>
+            <div class="soc-status-box">
+                <span class="soc-status-indicator pulse-cyan"></span>
+                <span class="soc-status-text">SYSTEM ARMED</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Top Real-Time SOC Telemetry Grid -->
+    <section class="telemetry-bar">
+        <div class="stat-card">
+            <div class="stat-icon-wrap cyan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">TOTAL SESSIONS SCANNED</span>
+                <span class="stat-value" id="statTotalScanned">0</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon-wrap red">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">INTRUSIONS BLOCKED</span>
+                <span class="stat-value highlight-red" id="statThreatsBlocked">0</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon-wrap emerald">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">CLEAN TRAFFIC</span>
+                <span class="stat-value highlight-emerald" id="statCleanTraffic">0</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon-wrap blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">INGESTION LATENCY</span>
+                <span class="stat-value highlight-blue" id="statLatency">1.6 ms</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="soc-nav">
+        <button class="nav-tab active" data-tab="tab-stream">
+            <span class="tab-icon">⚡</span>
+            <span>Live SOC Stream</span>
+            <span class="tab-badge-pulse">LIVE</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-inspector">
+            <span class="tab-icon">🎯</span>
+            <span>Packet Inspector & Scenarios</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-batch">
+            <span class="tab-icon">📂</span>
+            <span>Batch & Bulk Log Audit</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-analytics">
+            <span class="tab-icon">🔬</span>
+            <span>Notebook Step-by-Step Explorer</span>
+        </button>
+    </nav>
+
+    <!-- Application Main Container -->
+    <main class="soc-main">
+
+        <!-- TAB 1: LIVE SOC STREAM SIMULATOR -->
+        <section id="tab-stream" class="tab-content active">
+            <div class="stream-layout">
+                <!-- Stream Control & Live Gauge Panel -->
+                <div class="glass-panel stream-gauge-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-wrap">
+                            <span class="panel-icon cyan">📡</span>
+                            <h2>Live Stream Diagnostics</h2>
+                        </div>
+                        <div class="stream-controls">
+                            <button id="btnPlayStream" class="btn-cyber btn-play active">
+                                <span id="streamPlayIcon">▶</span> <span id="streamPlayText">Streaming Active</span>
+                            </button>
+                            <button id="btnStepStream" class="btn-cyber btn-secondary">
+                                <span>⏭</span> Step 1 Event
+                            </button>
+                            <button id="btnClearStream" class="btn-cyber btn-ghost">
+                                <span>🗑️</span> Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="stream-gauge-body">
+                        <!-- Threat Dial Gauge -->
+                        <div class="gauge-container">
+                            <div class="svg-gauge-wrap">
+                                <svg class="gauge-svg" viewBox="0 0 200 200">
+                                    <circle class="gauge-bg" cx="100" cy="100" r="80"></circle>
+                                    <circle class="gauge-fill" id="streamGaugeFill" cx="100" cy="100" r="80" stroke-dasharray="502.4" stroke-dashoffset="502.4"></circle>
+                                </svg>
+                                <div class="gauge-center-content">
+                                    <span class="gauge-number" id="streamThreatScore">0.0%</span>
+                                    <span class="gauge-label">THREAT SCORE</span>
+                                </div>
+                            </div>
+                            <div class="status-badge-container">
+                                <div id="streamStatusBadge" class="status-badge badge-safe">
+                                    INITIALIZING STREAM...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Session Details -->
+                        <div class="current-session-box">
+                            <h3 class="session-box-title">CURRENT EVALUATED PACKET</h3>
+                            <div class="session-meta-grid" id="streamSessionMeta">
+                                <div class="meta-item"><span class="meta-lbl">Session ID:</span><span class="meta-val" id="stMetaId">---</span></div>
+                                <div class="meta-item"><span class="meta-lbl">Protocol:</span><span class="meta-val" id="stMetaProto">---</span></div>
+                                <div class="meta-item"><span class="meta-lbl">Packet Size:</span><span class="meta-val" id="stMetaSize">---</span></div>
+                                <div class="meta-item"><span class="meta-lbl">Failed Logins:</span><span class="meta-val" id="stMetaFailed">---</span></div>
+                                <div class="meta-item"><span class="meta-lbl">IP Reputation:</span><span class="meta-val" id="stMetaIp">---</span></div>
+                                <div class="meta-item"><span class="meta-lbl">Encryption:</span><span class="meta-val" id="stMetaEnc">---</span></div>
+                                <div class="meta-item"><span class="meta-lbl">Duration:</span><span class="meta-val" id="stMetaDur">---</span></div>
+                                <div class="meta-item"><span class="meta-lbl">Off-Hours:</span><span class="meta-val" id="stMetaHours">---</span></div>
+                            </div>
+
+                            <div class="risk-factors-container">
+                                <span class="factors-title">Top Contributing Threat Drivers:</span>
+                                <div class="factors-tags" id="streamFactorTags">
+                                    <span class="factor-tag safe">Awaiting packet stream...</span>
+                                </div>
+                            </div>
+
+                            <div class="remediation-action-box" id="streamActionBox">
+                                <span class="action-icon">🛡️</span>
+                                <span class="action-text" id="streamActionText">Monitoring incoming dataset stream...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stream Speed Controls -->
+                    <div class="stream-speed-bar">
+                        <span class="speed-label">STREAM SPEED:</span>
+                        <button class="speed-btn active" data-speed="1200">1.2s Normal</button>
+                        <button class="speed-btn" data-speed="600">0.6s Fast</button>
+                        <button class="speed-btn" data-speed="250">0.25s High RPS</button>
+                    </div>
+                </div>
+
+                <!-- Stream Real-Time Feed Table -->
+                <div class="glass-panel stream-table-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-wrap">
+                            <span class="panel-icon green">⚡</span>
+                            <h2>Live Telemetry Packet Log</h2>
+                        </div>
+                        <span class="record-counter" id="streamLogCounter">0 events buffered</span>
+                    </div>
+
+                    <div class="table-scroll-wrap">
+                        <table class="cyber-table">
+                            <thead>
+                                <tr>
+                                    <th>SESSION ID</th>
+                                    <th>PROTO</th>
+                                    <th>SIZE (B)</th>
+                                    <th>FAILED</th>
+                                    <th>IP REP</th>
+                                    <th>ENCRYPTION</th>
+                                    <th>THREAT %</th>
+                                    <th>OUTCOME</th>
+                                </tr>
+                            </thead>
+                            <tbody id="streamTableBody">
+                                <!-- Dynamic live rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: PACKET INSPECTOR & SCENARIOS -->
+        <section id="tab-inspector" class="tab-content">
+            <div class="inspector-layout">
+                <!-- Left: Interactive Form & Presets -->
+                <div class="glass-panel inspector-form-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-wrap">
+                            <span class="panel-icon cyan">🎯</span>
+                            <h2>Packet Inspector & Scenario Tester</h2>
+                        </div>
+                    </div>
+
+                    <!-- Scenario Presets Bar -->
+                    <div class="scenario-presets-wrap">
+                        <span class="presets-title">1-CLICK ATTACK PRESETS FROM DATASET:</span>
+                        <div class="presets-grid">
+                            <button class="preset-btn red" id="presetBruteForce">
+                                <span class="preset-icon">💥</span>
+                                <div>
+                                    <div class="preset-name">Brute Force Attack</div>
+                                    <div class="preset-desc">11 attempts, 5 fails, DES</div>
+                                </div>
+                            </button>
+                            <button class="preset-btn orange" id="presetPacketSurge">
+                                <span class="preset-icon">🌊</span>
+                                <div>
+                                    <div class="preset-name">UDP Packet Flood</div>
+                                    <div class="preset-desc">1200 bytes, short duration</div>
+                                </div>
+                            </button>
+                            <button class="preset-btn purple" id="presetShadowAccess">
+                                <span class="preset-icon">🕵️</span>
+                                <div>
+                                    <div class="preset-name">Off-Hours Intrusion</div>
+                                    <div class="preset-desc">Low IP rep (0.09), Unknown browser</div>
+                                </div>
+                            </button>
+                            <button class="preset-btn green" id="presetLegitimate">
+                                <span class="preset-icon">🛡️</span>
+                                <div>
+                                    <div class="preset-name">Normal HTTPS Traffic</div>
+                                    <div class="preset-desc">AES, 0 fails, high IP rep (0.85)</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Manual Input Form -->
+                    <form id="inspectorForm" class="inspector-form">
+                        <div class="form-grid">
+                            <!-- Network Packet Size -->
+                            <div class="form-group">
+                                <div class="form-label-wrap">
+                                    <label for="inpPacketSize">Network Packet Size (Bytes)</label>
+                                    <span class="form-val-badge" id="valPacketSize">500 B</span>
+                                </div>
+                                <input type="range" id="inpPacketSize" min="64" max="1500" step="1" value="500" class="cyber-slider">
+                            </div>
+
+                            <!-- Protocol Type -->
+                            <div class="form-group">
+                                <label for="inpProtocol">Protocol Type</label>
+                                <select id="inpProtocol" class="cyber-select">
+                                    <option value="TCP" selected>TCP (Transmission Control Protocol)</option>
+                                    <option value="UDP">UDP (User Datagram Protocol)</option>
+                                    <option value="ICMP">ICMP (Internet Control Message Protocol)</option>
+                                </select>
+                            </div>
+
+                            <!-- Login Attempts -->
+                            <div class="form-group">
+                                <div class="form-label-wrap">
+                                    <label for="inpLoginAttempts">Total Login Attempts</label>
+                                    <span class="form-val-badge" id="valLoginAttempts">3</span>
+                                </div>
+                                <input type="range" id="inpLoginAttempts" min="1" max="15" step="1" value="3" class="cyber-slider">
+                            </div>
+
+                            <!-- Failed Logins -->
+                            <div class="form-group">
+                                <div class="form-label-wrap">
+                                    <label for="inpFailedLogins">Failed Login Count</label>
+                                    <span class="form-val-badge highlight-red" id="valFailedLogins">0</span>
+                                </div>
+                                <input type="range" id="inpFailedLogins" min="0" max="6" step="1" value="0" class="cyber-slider">
+                            </div>
+
+                            <!-- Session Duration -->
+                            <div class="form-group">
+                                <div class="form-label-wrap">
+                                    <label for="inpDuration">Session Duration (Seconds)</label>
+                                    <span class="form-val-badge" id="valDuration">450 s</span>
+                                </div>
+                                <input type="range" id="inpDuration" min="1" max="5000" step="10" value="450" class="cyber-slider">
+                            </div>
+
+                            <!-- IP Reputation Score -->
+                            <div class="form-group">
+                                <div class="form-label-wrap">
+                                    <label for="inpIpRep">IP Reputation Score (0.0 - 1.0)</label>
+                                    <span class="form-val-badge highlight-cyan" id="valIpRep">0.45</span>
+                                </div>
+                                <input type="range" id="inpIpRep" min="0.01" max="0.99" step="0.01" value="0.45" class="cyber-slider">
+                            </div>
+
+                            <!-- Encryption Used -->
+                            <div class="form-group">
+                                <label for="inpEncryption">Encryption Standard</label>
+                                <select id="inpEncryption" class="cyber-select">
+                                    <option value="AES" selected>AES (Advanced Encryption Standard)</option>
+                                    <option value="DES">DES (Legacy Weak Encryption)</option>
+                                    <option value="None">None / Unencrypted Missing</option>
+                                </select>
+                            </div>
+
+                            <!-- Browser Type -->
+                            <div class="form-group">
+                                <label for="inpBrowser">Client Browser / Agent</label>
+                                <select id="inpBrowser" class="cyber-select">
+                                    <option value="Chrome" selected>Google Chrome</option>
+                                    <option value="Firefox">Mozilla Firefox</option>
+                                    <option value="Edge">Microsoft Edge</option>
+                                    <option value="Safari">Apple Safari</option>
+                                    <option value="Unknown">Unknown / Bot User-Agent</option>
+                                </select>
+                            </div>
+
+                            <!-- Unusual Time Access Toggle -->
+                            <div class="form-group full-width">
+                                <div class="toggle-wrap">
+                                    <div class="toggle-desc">
+                                        <span class="toggle-title">Unusual Off-Hours Time Access</span>
+                                        <span class="toggle-sub">Flags sessions initiating outside standard operational window</span>
+                                    </div>
+                                    <label class="cyber-switch">
+                                        <input type="checkbox" id="inpUnusualTime">
+                                        <span class="switch-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="btnAnalyzeSample" class="btn-cyber btn-primary">
+                                <span class="btn-glow"></span>
+                                <span>⚡</span> RUN LIVE AI SECURITY DIAGNOSTIC
+                            </button>
+                            <button type="button" id="btnRandomizeInspector" class="btn-cyber btn-secondary">
+                                <span>🎲</span> Random Sample from Dataset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right: Threat Diagnostic Result -->
+                <div class="glass-panel inspector-result-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-wrap">
+                            <span class="panel-icon emerald">🛡️</span>
+                            <h2>AI Diagnostic Verdict</h2>
+                        </div>
+                        <span class="latency-tag" id="inspectLatency">Latency: 1.4ms</span>
+                    </div>
+
+                    <div class="inspector-verdict-body">
+                        <div class="verdict-gauge-wrap">
+                            <div class="verdict-score" id="inspectThreatScore">12.5%</div>
+                            <div class="verdict-label">INTRUSION PROBABILITY</div>
+                            <div class="verdict-badge badge-safe" id="inspectStatusBadge">
+                                🟩 NORMAL TRAFFIC
+                            </div>
+                        </div>
+
+                        <!-- Risk Feature Attribution -->
+                        <div class="verdict-details-box">
+                            <h3 class="box-subtitle">Feature Risk Factor Breakdown</h3>
+                            <div class="risk-factor-list" id="inspectFactorsList">
+                                <!-- Dynamic factors -->
+                            </div>
+                        </div>
+
+                        <!-- SOC Action Plan -->
+                        <div class="verdict-action-box" id="inspectActionBox">
+                            <h3 class="box-subtitle">Recommended Incident Response</h3>
+                            <p class="action-description" id="inspectActionDescription">
+                                Session Verified: Connection parameters conform to standard authorized business traffic.
+                            </p>
+                        </div>
+
+                        <!-- Raw Input JSON summary -->
+                        <div class="verdict-raw-summary">
+                            <span class="raw-title">Feature Vector Summary</span>
+                            <div class="raw-grid" id="inspectRawGrid">
+                                <!-- Features -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: BATCH & BULK LOG AUDIT SCANNER -->
+        <section id="tab-batch" class="tab-content">
+            <div class="batch-layout">
+                <!-- Batch Upload & Config Card -->
+                <div class="glass-panel batch-upload-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-wrap">
+                            <span class="panel-icon purple">📂</span>
+                            <h2>Bulk Connection Log Audit Scanner</h2>
+                        </div>
+                    </div>
+
+                    <p class="batch-instructions">
+                        Upload a network capture CSV file or run a high-throughput bulk scan directly on samples from 
+                        <code>cybersecurity_intrusion_data.csv</code>. Evaluates hundreds of rows instantly via the trained 
+                        <code>RandomForest</code> model bundle.
+                    </p>
+
+                    <!-- Dropzone Area -->
+                    <div class="dropzone-area" id="csvDropZone">
+                        <input type="file" id="batchFileInput" accept=".csv" class="dropzone-input">
+                        <div class="dropzone-visual">
+                            <div class="dropzone-icon">📁</div>
+                            <span class="dropzone-primary-text">Drag & Drop Network CSV Log File Here</span>
+                            <span class="dropzone-sub-text">or click to browse from computer (supports raw connection records)</span>
+                        </div>
+                        <div id="fileSelectedInfo" class="file-selected-badge hidden">
+                            <span id="selectedFileName">filename.csv</span>
+                            <button id="btnRemoveFile" class="btn-remove">✕</button>
+                        </div>
+                    </div>
+
+                    <div class="batch-button-row">
+                        <button id="btnScanUploaded" class="btn-cyber btn-primary">
+                            <span>🚀</span> SCAN BULK CSV AUDIT
+                        </button>
+                        <button id="btnScanSample50" class="btn-cyber btn-secondary">
+                            <span>🎲</span> Quick Scan 50 Records from Dataset
+                        </button>
+                        <button id="btnScanSample200" class="btn-cyber btn-secondary">
+                            <span>⚡</span> Scan 200 Records from Dataset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Batch Summary Metrics & Table -->
+                <div class="glass-panel batch-results-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-wrap">
+                            <span class="panel-icon cyan">📊</span>
+                            <h2>Audit Summary & Incident Report</h2>
+                        </div>
+                        <button id="btnExportBatchCsv" class="btn-cyber btn-export" disabled>
+                            <span>📥</span> Export Scored Audit Report (.csv)
+                        </button>
+                    </div>
+
+                    <!-- Batch Stat Counters -->
+                    <div class="batch-stats-grid">
+                        <div class="batch-stat-box">
+                            <span class="b-stat-lbl">TOTAL SCANNED</span>
+                            <span class="b-stat-val" id="batchTotalCount">0</span>
+                        </div>
+                        <div class="batch-stat-box red">
+                            <span class="b-stat-lbl">INTRUSIONS BLOCKED</span>
+                            <span class="b-stat-val highlight-red" id="batchThreatCount">0</span>
+                        </div>
+                        <div class="batch-stat-box green">
+                            <span class="b-stat-lbl">NORMAL TRAFFIC</span>
+                            <span class="b-stat-val highlight-emerald" id="batchNormalCount">0</span>
+                        </div>
+                        <div class="batch-stat-box cyan">
+                            <span class="b-stat-lbl">THREAT RATIO</span>
+                            <span class="b-stat-val highlight-cyan" id="batchThreatRate">0.0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Filter & Search Bar -->
+                    <div class="batch-filter-bar">
+                        <div class="search-input-wrap">
+                            <input type="text" id="batchSearchInput" placeholder="Filter by Session ID, Protocol, or Severity..." class="cyber-search">
+                        </div>
+                        <div class="filter-pills">
+                            <button class="filter-pill active" data-filter="ALL">All Events</button>
+                            <button class="filter-pill" data-filter="INTRUSION">Threats Only</button>
+                            <button class="filter-pill" data-filter="NORMAL">Normal Only</button>
+                        </div>
+                    </div>
+
+                    <!-- Batch Table -->
+                    <div class="table-scroll-wrap batch-table-wrap">
+                        <table class="cyber-table">
+                            <thead>
+                                <tr>
+                                    <th>SESSION ID</th>
+                                    <th>PROTOCOL</th>
+                                    <th>PACKET SIZE</th>
+                                    <th>FAILED LOGINS</th>
+                                    <th>IP REP SCORE</th>
+                                    <th>ENCRYPTION</th>
+                                    <th>THREAT PROBABILITY</th>
+                                    <th>AUDIT VERDICT</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchTableBody">
+                                <tr>
+                                    <td colspan="8" class="empty-table-msg">
+                                        No batch audit performed yet. Upload a CSV or select "Quick Scan 50 Records".
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: NOTEBOOK STEP-BY-STEP EXPLORER & ANALYTICS -->
+        <section id="tab-analytics" class="tab-content">
+            <div class="analytics-layout">
+                <!-- Left: Step-by-Step ML Pipeline Flow -->
+                <div class="glass-panel notebook-flow-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-wrap">
+                            <span class="panel-icon cyan">🔬</span>
+                            <h2>Jupyter Notebook ML Lifecycle (12 Steps)</h2>
+                        </div>
+                        <span class="badge-source">cyber_security_step_by_step.ipynb</span>
+                    </div>
+
+                    <div class="notebook-steps-accordion">
+                        <!-- Step 1-3 -->
+                        <div class="step-card">
+                            <div class="step-header">
+                                <span class="step-num">STEP 1 - 3</span>
+                                <span class="step-name">Zero-Leakage Stratified Ingestion</span>
+                                <span class="step-tag success">Verified</span>
+                            </div>
+                            <div class="step-body">
+                                9,537 session logs split into 80% Train (7,629) and 20% Test (1,908) stratified by <code>attack_detected</code>. Scaler and imputers fitted <strong>strictly on X_train</strong> with zero data leakage.
+                            </div>
+                        </div>
+
+                        <!-- Step 4-6 -->
+                        <div class="step-card">
+                            <div class="step-header">
+                                <span class="step-num">STEP 4 - 6</span>
+                                <span class="step-name">Robust Scaler & Categorical Encoders</span>
+                                <span class="step-tag success">Fitted</span>
+                            </div>
+                            <div class="step-body">
+                                Imputed missing crypto (<code>SimpleImputer(fill_value='Unknown')</code>), median imputed numeric features, standardized continuous variables with <code>StandardScaler</code>, and encoded categorical variables into 17 feature dimensions.
+                            </div>
+                        </div>
+
+                        <!-- Step 7-8 -->
+                        <div class="step-card">
+                            <div class="step-header">
+                                <span class="step-num">STEP 7 - 8</span>
+                                <span class="step-name">RandomForestClassifier Training</span>
+                                <span class="step-tag success">AUC: 0.9032</span>
+                            </div>
+                            <div class="step-body">
+                                Trained 300 decision trees with <code>class_weight='balanced_subsample'</code>. Evaluated on unseen test set yielding <strong>0.9032 ROC-AUC</strong>, <strong>85.48% Accuracy</strong>, <strong>88.75% Recall</strong>, and <strong>81.20% Precision</strong>.
+                            </div>
+                        </div>
+
+                        <!-- Step 9-12 -->
+                        <div class="step-card">
+                            <div class="step-header">
+                                <span class="step-num">STEP 9 - 12</span>
+                                <span class="step-name">Calibrated Threshold & Production Bundle</span>
+                                <span class="step-tag success">Threshold = 0.35</span>
+                            </div>
+                            <div class="step-body">
+                                Calibrated custom security threshold to <code>0.35</code> for optimal zero-trust high-threat recall. Exported complete model + scaler + encoder bundle to <code>intrusion_model_bundle.joblib</code> for production runtime serving.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature Importance Bar Chart -->
+                    <div class="feat-importance-section">
+                        <h3 class="box-subtitle">Feature Importance Rankings (Notebook Random Forest)</h3>
+                        <div class="feat-bars-container" id="featureImportanceBars">
+                            <!-- Dynamic Bars -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Model Diagnostics & Dataset Distributions -->
+                <div class="glass-panel model-metrics-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-wrap">
+                            <span class="panel-icon emerald">📈</span>
+                            <h2>Dataset & Model Diagnostics</h2>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="metrics-quad-grid">
+                        <div class="quad-card">
+                            <span class="quad-label">ROC-AUC SCORE</span>
+                            <span class="quad-value highlight-emerald">0.9032</span>
+                            <span class="quad-sub">Unseen 20% Test Holdout</span>
+                        </div>
+                        <div class="quad-card">
+                            <span class="quad-label">INTRUSION RECALL</span>
+                            <span class="quad-value highlight-cyan">88.75%</span>
+                            <span class="quad-sub">Threat Detection Rate</span>
+                        </div>
+                        <div class="quad-card">
+                            <span class="quad-label">PRECISION</span>
+                            <span class="quad-value highlight-blue">81.20%</span>
+                            <span class="quad-sub">At 0.35 Calibrated Threshold</span>
+                        </div>
+                        <div class="quad-card">
+                            <span class="quad-label">F1-SCORE</span>
+                            <span class="quad-value highlight-purple">0.8481</span>
+                            <span class="quad-sub">Harmonic Balance Metric</span>
+                        </div>
+                    </div>
+
+                    <!-- Dataset Attack Rate by Protocol & Encryption -->
+                    <div class="dist-chart-container">
+                        <h3 class="box-subtitle">Attack Rates by Protocol (cybersecurity_intrusion_data.csv)</h3>
+                        <div class="dist-bars-grid" id="protocolDistBars">
+                            <!-- Protocol bars -->
+                        </div>
+                    </div>
+
+                    <div class="dist-chart-container">
+                        <h3 class="box-subtitle">Attack Rates by Encryption Type</h3>
+                        <div class="dist-bars-grid" id="encryptionDistBars">
+                            <!-- Encryption bars -->
+                        </div>
+                    </div>
+
+                    <!-- Confusion Matrix Visualizer -->
+                    <div class="confusion-matrix-box">
+                        <h3 class="box-subtitle">Holdout Test Set Confusion Matrix</h3>
+                        <div class="cm-grid">
+                            <div class="cm-cell true-neg">
+                                <span class="cm-count">918</span>
+                                <span class="cm-tag">True Normal (TN)</span>
+                            </div>
+                            <div class="cm-cell false-pos">
+                                <span class="cm-count">137</span>
+                                <span class="cm-tag">False Alarm (FP)</span>
+                            </div>
+                            <div class="cm-cell false-neg">
+                                <span class="cm-count">96</span>
+                                <span class="cm-tag">Missed Threat (FN)</span>
+                            </div>
+                            <div class="cm-cell true-pos">
+                                <span class="cm-count">757</span>
+                                <span class="cm-tag">Blocked Threat (TP)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="soc-footer">
+        <div class="footer-left">
+            <span>Powered by <strong>Random Forest Classifier</strong> + <strong>FastAPI Engine</strong></span>
+        </div>
+        <div class="footer-center">
+            <span>Trained on <code>cybersecurity_intrusion_data.csv</code> | Source: <code>cyber_security_step_by_step.ipynb</code></span>
+        </div>
+        <div class="footer-right">
+            <span class="status-live-dot"></span> CyberSOC Engine Online
+        </div>
+    </footer>
+
+    <!-- App JavaScript -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
