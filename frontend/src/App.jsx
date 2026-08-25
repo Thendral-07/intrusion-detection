@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Sliders, FileSpreadsheet, Layers } from 'lucide-react';
+import { Shield, Sliders, Layers, Moon, Sun } from 'lucide-react';
 import InspectorTab from './components/InspectorTab.jsx';
 import NotebookExplorerTab from './components/NotebookExplorerTab.jsx';
 
@@ -7,6 +7,12 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('inspector'); // inspector, batch, analytics
   const [globalThreshold, setGlobalThreshold] = useState(0.35);
   const [systemHealth, setSystemHealth] = useState(null);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     fetch('/api/health')
@@ -34,6 +40,21 @@ export default function App() {
           </div>
 
           <div className="masthead-telemetry">
+            <button
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--color-ink)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0.5rem',
+              }}
+            >
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
             
             {/* Global Threshold Tuner */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '180px' }}>
