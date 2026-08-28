@@ -327,7 +327,14 @@ export default function InspectorTab({ globalThreshold }) {
                 min="1"
                 max="15"
                 value={formData.login_attempts}
-                onChange={(e) => setFormData({ ...formData, login_attempts: Number(e.target.value) })}
+                onChange={(e) => {
+                  const newAttempts = Number(e.target.value);
+                  setFormData({ 
+                    ...formData, 
+                    login_attempts: newAttempts,
+                    failed_logins: Math.min(formData.failed_logins, newAttempts)
+                  });
+                }}
                 style={{ width: '100%', accentColor: 'var(--color-text)' }}
               />
               <span className="forge-field__hint">Normal users: 1 - 3 attempts</span>
@@ -342,9 +349,14 @@ export default function InspectorTab({ globalThreshold }) {
               <input
                 type="range"
                 min="0"
-                max="6"
+                max={Math.min(6, formData.login_attempts)}
                 value={formData.failed_logins}
-                onChange={(e) => setFormData({ ...formData, failed_logins: Number(e.target.value) })}
+                onChange={(e) => {
+                  const newFails = Number(e.target.value);
+                  if (newFails <= formData.login_attempts) {
+                    setFormData({ ...formData, failed_logins: newFails });
+                  }
+                }}
                 style={{ width: '100%', accentColor: 'var(--color-signal)' }}
               />
               <span className="forge-field__hint">Consecutive failed passwords</span>
