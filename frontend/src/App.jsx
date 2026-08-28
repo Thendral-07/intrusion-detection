@@ -41,26 +41,18 @@ export default function App() {
 
           <div className="masthead-telemetry">
             <button
+              className="forge-btn forge-btn--ghost"
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--color-ink)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0.5rem',
-              }}
+              style={{ padding: '0 8px', color: 'var(--color-text)' }}
             >
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
             
             {/* Global Threshold Tuner */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '180px' }}>
+            <div className="forge-field" style={{ minWidth: '180px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span className="telemetry-item__lbl">DECISION THRESHOLD:</span>
-                <span className="broadside-field__val-tag">{globalThreshold}</span>
+                <span className="forge-field__label" style={{ marginBottom: 0 }}>DECISION THRESHOLD:</span>
+                <span className="forge-spec__tag">{globalThreshold}</span>
               </div>
               <input
                 type="range"
@@ -75,7 +67,7 @@ export default function App() {
 
             <div className="telemetry-item">
               <span className="telemetry-item__lbl">PIPELINE ACCURACY</span>
-              <span className="telemetry-item__val" style={{ color: 'var(--color-ink)' }}>85.48%</span>
+              <span className="telemetry-item__val" style={{ color: 'var(--color-accent)' }}>85.48%</span>
             </div>
 
             <div className="telemetry-item">
@@ -87,26 +79,28 @@ export default function App() {
         </div>
       </header>
 
-      {/* Broadside Navigation Tabs */}
-      <nav className="broadside-nav">
+      {/* Forge Navigation Tabs */}
+      <div className="forge-tabs" role="tablist">
         <button
           type="button"
-          className={`broadside-tab ${activeTab === 'inspector' ? 'active' : ''}`}
+          role="tab"
+          className={`forge-tabs__tab ${activeTab === 'inspector' ? 'is-active' : ''}`}
           onClick={() => setActiveTab('inspector')}
         >
-          <Sliders size={16} />
-          <span>Single Packet Inspector & Scenarios</span>
+          <span className="forge-tabs__num">01</span>
+          Inspector
         </button>
 
         <button
           type="button"
-          className={`broadside-tab ${activeTab === 'analytics' ? 'active' : ''}`}
+          role="tab"
+          className={`forge-tabs__tab ${activeTab === 'analytics' ? 'is-active' : ''}`}
           onClick={() => setActiveTab('analytics')}
         >
-          <Layers size={16} />
-          <span>Notebook Step-by-Step Explorer & Metrics</span>
+          <span className="forge-tabs__num">02</span>
+          Analytics
         </button>
-      </nav>
+      </div>
 
       {/* Active Tab View */}
       <main>
@@ -114,25 +108,28 @@ export default function App() {
         {activeTab === 'analytics' && <NotebookExplorerTab />}
       </main>
 
-      {/* Broadside Footer */}
+      {/* Forge Footer */}
       <footer
         style={{
-          border: 'var(--rule) solid var(--color-ink)',
-          background: 'var(--color-stock)',
-          padding: '1rem 1.5rem',
+          borderTop: '1px solid var(--color-border)',
+          background: 'transparent',
+          marginTop: '3rem',
+          padding: '1.5rem 0',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '0.75rem',
-          fontSize: '0.75rem',
-          fontWeight: 700,
+          fontFamily: 'var(--font-mono)',
+          fontSize: '11px',
+          fontWeight: 600,
           textTransform: 'uppercase',
-          letterSpacing: '0.08em',
+          letterSpacing: '0.12em',
+          color: 'var(--color-text-muted)'
         }}
       >
         <div>
-          BROADSIDE DESIGN SYSTEM // INSPIRED BY UIVERSE.IO // ZERO RADIUS HARD RULES
+          FORGE DESIGN SYSTEM // CYBERPUNK DEVELOPER AESTHETIC
         </div>
         <div>
           TRAINED EXCLUSIVELY ON <code>cybersecurity_intrusion_data.csv</code> & <code>cyber_security_step_by_step.ipynb</code>

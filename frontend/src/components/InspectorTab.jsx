@@ -54,10 +54,10 @@ export default function InspectorTab({ globalThreshold }) {
   };
 
   const getIpTierLabel = (score) => {
-    if (score <= 0.30) return { label: '🟢 CLEAN / VERIFIED IP', color: 'var(--color-acid)' };
-    if (score <= 0.55) return { label: '🟡 NEUTRAL / UNKNOWN IP', color: 'var(--color-stock)' };
-    if (score <= 0.80) return { label: '🟠 SUSPICIOUS / PROXY IP', color: 'var(--color-signal)' };
-    return { label: '🚨 HIGH-RISK BLACKLISTED IP', color: 'var(--color-signal)' };
+    if (score <= 0.30) return { label: 'CLEAN / VERIFIED IP', class: 'forge-spec__status--acid' };
+    if (score <= 0.55) return { label: 'NEUTRAL / UNKNOWN IP', class: '' };
+    if (score <= 0.80) return { label: 'SUSPICIOUS / PROXY IP', class: 'forge-spec__status--cobalt' };
+    return { label: 'HIGH-RISK BLACKLISTED IP', class: 'forge-spec__status--signal' };
   };
 
   const loadPreset = (preset) => {
@@ -152,74 +152,74 @@ export default function InspectorTab({ globalThreshold }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '1.5rem' }}>
       
-      {/* Left: Interactive Broadside Form */}
-      <div className="broadside-card broadside-card--offset">
-        <header className="broadside-card__header broadside-card__header--dark">
-          <span>EVENT PARAMETER INSPECTOR</span>
-          <span className="broadside-card__meta">EASY THREAT SIMULATOR</span>
+      {/* Left: Interactive Forge Form */}
+      <article className="forge-spec">
+        <header className="forge-spec__bar">
+          <span className="forge-spec__id">01</span>
+          <span className="forge-spec__title">EVENT PARAMETER INSPECTOR</span>
+          <span className="forge-spec__status">SIMULATOR</span>
         </header>
 
-        <div className="broadside-card__body">
+        <div className="forge-spec__body">
           
           {/* 1-Click Preset Attack Scenarios */}
           <div>
-            <span className="broadside-field__label">QUICK ATTACK SCENARIOS:</span>
+            <div className="forge-spec__eyebrow">QUICK ATTACK SCENARIOS</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', marginTop: '0.35rem' }}>
               <button
                 type="button"
-                className="broadside-btn broadside-btn--primary"
-                style={{ fontSize: '0.75rem', padding: '0.5rem', minHeight: '38px' }}
+                className="forge-btn forge-btn--primary"
                 onClick={() => loadPreset('brute-force')}
               >
-                💥 Brute Force Attack
+                Brute Force
               </button>
               <button
                 type="button"
-                className="broadside-btn broadside-btn--cobalt"
-                style={{ fontSize: '0.75rem', padding: '0.5rem', minHeight: '38px' }}
+                className="forge-btn forge-btn--ghost"
+                style={{ border: '1px solid var(--color-cobalt)', color: 'var(--color-cobalt)' }}
                 onClick={() => loadPreset('packet-flood')}
               >
-                🌊 Traffic Surge
+                Traffic Surge
               </button>
               <button
                 type="button"
-                className="broadside-btn broadside-btn--ghost"
-                style={{ fontSize: '0.75rem', padding: '0.5rem', minHeight: '38px' }}
+                className="forge-btn forge-btn--ghost"
                 onClick={() => loadPreset('shadow-access')}
               >
-                🕵️ Off-Hours Access
+                Off-Hours
               </button>
               <button
                 type="button"
-                className="broadside-btn broadside-btn--acid"
-                style={{ fontSize: '0.75rem', padding: '0.5rem', minHeight: '38px' }}
+                className="forge-btn forge-btn--ghost"
+                style={{ border: '1px solid var(--color-acid)', color: 'var(--color-acid)' }}
                 onClick={() => loadPreset('legitimate')}
               >
-                🛡️ Safe Verified User
+                Verified Safe
               </button>
             </div>
           </div>
 
-          <hr style={{ border: 'none', borderTop: 'var(--rule) solid var(--color-ink)', margin: '0.25rem 0' }} />
+          <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: '1.5rem 0' }} />
 
           {/* ================================================================= */}
           {/* PRIMARY FEATURE: IP REPUTATION (DEFAULT + SELECTIVE TIERS) */}
           {/* ================================================================= */}
           <div
             style={{
-              border: 'var(--rule) solid var(--color-ink)',
+              border: '1px solid var(--color-border)',
               padding: '1rem',
-              background: 'var(--color-bone)',
+              background: 'var(--color-slate)',
+              borderRadius: '4px',
               display: 'flex',
               flexDirection: 'column',
               gap: '0.75rem',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span className="broadside-field__label" style={{ fontSize: '0.85rem' }}>
-                🌐 IP REPUTATION & THREAT INTELLIGENCE:
+              <span className="forge-spec__eyebrow" style={{ marginBottom: 0 }}>
+                IP REPUTATION & THREAT INTELLIGENCE
               </span>
-              <span className="broadside-field__val-tag" style={{ fontSize: '0.9rem' }}>
+              <span className="forge-spec__tag">
                 Score: {formData.ip_reputation_score}
               </span>
             </div>
@@ -228,91 +228,81 @@ export default function InspectorTab({ globalThreshold }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.4rem' }}>
               <button
                 type="button"
-                className={`broadside-btn broadside-btn--ghost`}
+                className="forge-btn forge-btn--ghost"
                 style={{
-                  padding: '0.4rem 0.65rem',
-                  minHeight: '36px',
                   fontSize: '0.7rem',
-                  background: formData.ip_reputation_score <= 0.30 ? 'var(--color-acid)' : 'var(--color-stock)',
-                  color: 'var(--color-ink)',
-                  border: 'var(--rule) solid var(--color-ink)',
-                  fontWeight: 800,
+                  background: formData.ip_reputation_score <= 0.30 ? 'var(--color-acid)' : 'transparent',
+                  color: formData.ip_reputation_score <= 0.30 ? '#000' : 'var(--color-text-muted)',
+                  border: formData.ip_reputation_score <= 0.30 ? 'none' : '1px solid var(--color-border)'
                 }}
                 onClick={() => setIpTier(0.25)}
               >
-                🟢 Verified Trusted (0.25)
+                Verified Trusted
               </button>
 
               <button
                 type="button"
-                className={`broadside-btn broadside-btn--ghost`}
+                className="forge-btn forge-btn--ghost"
                 style={{
-                  padding: '0.4rem 0.65rem',
-                  minHeight: '36px',
                   fontSize: '0.7rem',
-                  background: formData.ip_reputation_score > 0.30 && formData.ip_reputation_score <= 0.55 ? 'var(--color-ink)' : 'var(--color-stock)',
-                  color: formData.ip_reputation_score > 0.30 && formData.ip_reputation_score <= 0.55 ? '#fff' : 'var(--color-ink)',
-                  border: 'var(--rule) solid var(--color-ink)',
-                  fontWeight: 800,
+                  background: formData.ip_reputation_score > 0.30 && formData.ip_reputation_score <= 0.55 ? 'var(--color-graphite)' : 'transparent',
+                  color: formData.ip_reputation_score > 0.30 && formData.ip_reputation_score <= 0.55 ? 'var(--color-text)' : 'var(--color-text-muted)',
+                  border: '1px solid var(--color-border)'
                 }}
                 onClick={() => setIpTier(0.48)}
               >
-                🟡 Neutral / ISP (0.48)
+                Neutral / ISP
               </button>
 
               <button
                 type="button"
-                className={`broadside-btn broadside-btn--ghost`}
+                className="forge-btn forge-btn--ghost"
                 style={{
-                  padding: '0.4rem 0.65rem',
-                  minHeight: '36px',
                   fontSize: '0.7rem',
-                  background: formData.ip_reputation_score > 0.55 && formData.ip_reputation_score <= 0.80 ? 'var(--color-cobalt)' : 'var(--color-stock)',
-                  color: formData.ip_reputation_score > 0.55 && formData.ip_reputation_score <= 0.80 ? '#fff' : 'var(--color-ink)',
-                  border: 'var(--rule) solid var(--color-ink)',
-                  fontWeight: 800,
+                  background: formData.ip_reputation_score > 0.55 && formData.ip_reputation_score <= 0.80 ? 'var(--color-cobalt)' : 'transparent',
+                  color: formData.ip_reputation_score > 0.55 && formData.ip_reputation_score <= 0.80 ? '#fff' : 'var(--color-text-muted)',
+                  border: formData.ip_reputation_score > 0.55 && formData.ip_reputation_score <= 0.80 ? 'none' : '1px solid var(--color-border)'
                 }}
                 onClick={() => setIpTier(0.75)}
               >
-                🟠 Suspicious Proxy (0.75)
+                Suspicious Proxy
               </button>
 
               <button
                 type="button"
-                className={`broadside-btn broadside-btn--ghost`}
+                className="forge-btn forge-btn--ghost"
                 style={{
-                  padding: '0.4rem 0.65rem',
-                  minHeight: '36px',
                   fontSize: '0.7rem',
-                  background: formData.ip_reputation_score > 0.80 ? 'var(--color-signal)' : 'var(--color-stock)',
-                  color: formData.ip_reputation_score > 0.80 ? '#fff' : 'var(--color-ink)',
-                  border: 'var(--rule) solid var(--color-ink)',
-                  fontWeight: 800,
+                  background: formData.ip_reputation_score > 0.80 ? 'var(--color-signal)' : 'transparent',
+                  color: formData.ip_reputation_score > 0.80 ? '#fff' : 'var(--color-text-muted)',
+                  border: formData.ip_reputation_score > 0.80 ? 'none' : '1px solid var(--color-border)'
                 }}
                 onClick={() => setIpTier(0.92)}
               >
-                🔴 Known Malicious (0.92)
+                Known Malicious
               </button>
             </div>
 
             {/* Continuous Fine-Tune Slider */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--color-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-                <span>0.00 (Zero Threat)</span>
-                <span style={{ fontWeight: 800, color: 'var(--color-ink)' }}>{currentTier.label}</span>
-                <span>1.00 (Max Risk)</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--color-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                <span>Zero Threat</span>
+                <span className={`forge-spec__status ${currentTier.class}`}>{currentTier.label}</span>
+                <span>Max Risk</span>
               </div>
               <input
                 type="range"
-                className="broadside-slider"
                 min="0.01"
                 max="0.99"
                 step="0.01"
                 value={formData.ip_reputation_score}
                 onChange={(e) => setFormData({ ...formData, ip_reputation_score: Number(e.target.value) })}
+                style={{ width: '100%', accentColor: 'var(--color-accent)', marginTop: '8px' }}
               />
             </div>
           </div>
+
+          <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: '1.5rem 0' }} />
 
           {/* ================================================================= */}
           {/* PRIMARY USER-FRIENDLY CONTROLS: LOGIN ATTEMPTS & FAILED LOGINS */}
@@ -320,79 +310,65 @@ export default function InspectorTab({ globalThreshold }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginTop: '0.25rem' }}>
             
             {/* Login Attempts */}
-            <div className="broadside-field">
-              <label className="broadside-field__label">
-                <span>Login Attempts</span>
-                <span className="broadside-field__val-tag">{formData.login_attempts}</span>
-              </label>
+            <div className="forge-field">
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <label className="forge-field__label">Login Attempts</label>
+                  <span className="forge-spec__tag">{formData.login_attempts}</span>
+              </div>
               <input
                 type="range"
-                className="broadside-slider"
                 min="1"
                 max="15"
                 value={formData.login_attempts}
                 onChange={(e) => setFormData({ ...formData, login_attempts: Number(e.target.value) })}
+                style={{ width: '100%', accentColor: 'var(--color-text)' }}
               />
-              <span className="broadside-field__hint">Normal users: 1 - 3 attempts</span>
+              <span className="forge-field__hint">Normal users: 1 - 3 attempts</span>
             </div>
 
             {/* Failed Logins */}
-            <div className="broadside-field">
-              <label className="broadside-field__label">
-                <span>Failed Logins</span>
-                <span className="broadside-field__val-tag" style={{ background: 'var(--color-signal)', color: '#fff' }}>
-                  {formData.failed_logins}
-                </span>
-              </label>
+            <div className="forge-field">
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <label className="forge-field__label">Failed Logins</label>
+                  <span className="forge-spec__tag forge-spec__tag--signal">{formData.failed_logins}</span>
+              </div>
               <input
                 type="range"
-                className="broadside-slider"
                 min="0"
                 max="6"
                 value={formData.failed_logins}
                 onChange={(e) => setFormData({ ...formData, failed_logins: Number(e.target.value) })}
+                style={{ width: '100%', accentColor: 'var(--color-signal)' }}
               />
-              <span className="broadside-field__hint">Consecutive failed passwords</span>
+              <span className="forge-field__hint">Consecutive failed passwords</span>
             </div>
 
           </div>
 
+          <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: '1.5rem 0' }} />
+
           {/* ================================================================= */}
           {/* COLLAPSIBLE ADVANCED MACHINE LEARNING PARAMETERS */}
           {/* ================================================================= */}
-          <div style={{ marginTop: '0.5rem', border: 'var(--rule) solid var(--color-ink)', background: 'var(--color-paper)' }}>
+          <div style={{ marginTop: '0.5rem' }}>
             <button
               type="button"
-              style={{
-                width: '100%',
-                padding: '0.5rem 0.75rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                background: 'var(--color-stock)',
-                border: 'none',
-                borderBottom: showAdvancedNetwork ? 'var(--rule) solid var(--color-ink)' : 'none',
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 700,
-                fontSize: '0.75rem',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-              }}
+              className="forge-btn forge-btn--ghost"
+              style={{ width: '100%', justifyContent: 'space-between' }}
               onClick={() => setShowAdvancedNetwork(!showAdvancedNetwork)}
             >
-              <span>⚙️ Advanced Machine Learning Parameters</span>
+              <span>Advanced ML Parameters</span>
               {showAdvancedNetwork ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
 
             {showAdvancedNetwork && (
-              <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid var(--color-border)', borderTop: 'none', background: 'var(--color-slate)', borderRadius: '0 0 4px 4px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                   {/* Encryption Standard */}
-                  <div className="broadside-field">
-                    <label className="broadside-field__label">Security / Encryption</label>
+                  <div className="forge-field">
+                    <label className="forge-field__label">Security / Encryption</label>
                     <select
-                      className="broadside-field__select"
+                      className="forge-field__select"
                       value={formData.encryption_used}
                       onChange={(e) => setFormData({ ...formData, encryption_used: e.target.value })}
                     >
@@ -403,10 +379,10 @@ export default function InspectorTab({ globalThreshold }) {
                   </div>
 
                   {/* Browser / Client */}
-                  <div className="broadside-field">
-                    <label className="broadside-field__label">Browser / Client Agent</label>
+                  <div className="forge-field">
+                    <label className="forge-field__label">Browser / Client Agent</label>
                     <select
-                      className="broadside-field__select"
+                      className="forge-field__select"
                       value={formData.browser_type}
                       onChange={(e) => setFormData({ ...formData, browser_type: e.target.value })}
                     >
@@ -420,10 +396,10 @@ export default function InspectorTab({ globalThreshold }) {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                  <div className="broadside-field">
-                    <label className="broadside-field__label">Protocol</label>
+                  <div className="forge-field">
+                    <label className="forge-field__label">Protocol</label>
                     <select
-                      className="broadside-field__select"
+                      className="forge-field__select"
                       value={formData.protocol_type}
                       onChange={(e) => setFormData({ ...formData, protocol_type: e.target.value })}
                     >
@@ -433,111 +409,117 @@ export default function InspectorTab({ globalThreshold }) {
                     </select>
                   </div>
 
-                  <div className="broadside-field">
-                    <label className="broadside-field__label">
-                      <span>Packet Size</span>
-                      <span className="broadside-field__val-tag">{formData.network_packet_size}B</span>
-                    </label>
+                  <div className="forge-field">
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <label className="forge-field__label">Packet Size</label>
+                        <span className="forge-spec__tag">{formData.network_packet_size}B</span>
+                    </div>
                     <input
                       type="range"
-                      className="broadside-slider"
                       min="64"
                       max="1500"
                       value={formData.network_packet_size}
                       onChange={(e) => setFormData({ ...formData, network_packet_size: Number(e.target.value) })}
+                      style={{ width: '100%', accentColor: 'var(--color-text)' }}
                     />
                   </div>
 
-                  <div className="broadside-field">
-                    <label className="broadside-field__label">
-                      <span>Duration</span>
-                      <span className="broadside-field__val-tag">{formData.session_duration}s</span>
-                    </label>
+                  <div className="forge-field">
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <label className="forge-field__label">Duration</label>
+                        <span className="forge-spec__tag">{formData.session_duration}s</span>
+                    </div>
                     <input
                       type="range"
-                      className="broadside-slider"
                       min="1"
                       max="5000"
                       step="10"
                       value={formData.session_duration}
                       onChange={(e) => setFormData({ ...formData, session_duration: Number(e.target.value) })}
+                      style={{ width: '100%', accentColor: 'var(--color-text)' }}
                     />
                   </div>
                 </div>
 
-                <label className="broadside-switch">
+                <label className="forge-toggle">
                   <input
                     type="checkbox"
-                    className="broadside-switch__input"
                     checked={formData.unusual_time_access === 1}
                     onChange={(e) => setFormData({ ...formData, unusual_time_access: e.target.checked ? 1 : 0 })}
                   />
-                  <span className="broadside-switch__track"></span>
-                  <span className="broadside-switch__label">Flag Off-Hours Operational Access</span>
+                  Flag Off-Hours Operational Access
                 </label>
               </div>
             )}
           </div>
 
           {/* Action Trigger Buttons */}
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
             <button
               type="button"
-              className="broadside-btn broadside-btn--primary broadside-btn--offset"
+              className="forge-btn forge-btn--primary"
               style={{ flex: 1 }}
               onClick={() => runDiagnostic()}
             >
-              <Zap size={18} /> RUN DIAGNOSTIC
+              <Zap size={14} /> RUN DIAGNOSTIC
             </button>
             <button
               type="button"
-              className="broadside-btn broadside-btn--ghost"
+              className="forge-btn forge-btn--ghost"
               style={{ flex: 1 }}
               onClick={() => loadRandomSampleFromDataset()}
             >
-              🎲 Random Dataset Sample
+              Random Dataset Sample
             </button>
           </div>
         </div>
 
-        <footer className="broadside-card__footer">
-          <span className="broadside-card__meta">DECISION THRESHOLD: {globalThreshold}</span>
-          <span className="broadside-card__tag">SOC INTELLIGENCE</span>
-        </footer>
-      </div>
+      </article>
 
-      {/* Right: Broadside Diagnostic Verdict Card */}
-      <div className="broadside-card broadside-card--offset">
-        <header className={`broadside-card__header ${diagnosticResult?.is_intrusion ? 'broadside-card__header--signal' : 'broadside-card__header--acid'}`}>
-          <span>ML DIAGNOSTIC VERDICT</span>
-          <span className={`broadside-card__tag ${diagnosticResult?.is_intrusion ? 'broadside-card__tag--signal' : 'broadside-card__tag--acid'}`}>
-            {diagnosticResult?.is_intrusion ? 'ATTACK DETECTED' : 'NO ATTACK DETECTED'}
+      {/* Right: Forge Diagnostic Verdict Card */}
+      <article className="forge-spec">
+        <header className="forge-spec__bar">
+          <span className="forge-spec__id">02</span>
+          <span className="forge-spec__title">ML DIAGNOSTIC VERDICT</span>
+          <span className={`forge-spec__status ${diagnosticResult?.is_intrusion ? 'forge-spec__status--signal' : 'forge-spec__status--acid'}`}>
+            {diagnosticResult?.is_intrusion ? 'ATTACK DETECTED' : 'LIVE'}
           </span>
         </header>
 
-        <div className="broadside-card__body">
-          {diagnosticResult ? (
+        <div className="forge-spec__body" style={{ display: 'flex', flexDirection: 'column' }}>
+          {loading ? (
+             <div className="forge-loader" role="status" aria-label="Loading" style={{ margin: 'auto' }}>
+               <div className="forge-loader__bars">
+                 <span className="forge-loader__bar"></span>
+                 <span className="forge-loader__bar"></span>
+                 <span className="forge-loader__bar"></span>
+                 <span className="forge-loader__bar"></span>
+                 <span className="forge-loader__bar"></span>
+               </div>
+               <span className="forge-loader__label">Analyzing · {formData.session_id}</span>
+             </div>
+          ) : diagnosticResult ? (
             <>
               {/* Verdict Header Banner */}
               <div
                 style={{
-                  border: `2px solid ${diagnosticResult.is_intrusion ? 'var(--color-signal)' : 'var(--color-acid)'}`,
+                  border: `1px solid ${diagnosticResult.is_intrusion ? 'var(--color-signal)' : 'var(--color-acid)'}`,
                   borderRadius: '4px',
                   padding: '1.5rem 1.25rem',
-                  background: diagnosticResult.is_intrusion ? 'var(--color-bg-signal)' : 'var(--color-bg-acid)',
+                  background: 'var(--color-slate)',
                   textAlign: 'center',
                 }}
               >
                 <div style={{
-                  fontFamily: 'var(--font-display)',
+                  fontFamily: 'var(--font-sans)',
                   fontSize: '2rem',
                   fontWeight: 900,
                   lineHeight: 1.1,
-                  color: diagnosticResult.is_intrusion ? '#EF4444' : '#10B981',
+                  color: diagnosticResult.is_intrusion ? 'var(--color-signal)' : 'var(--color-acid)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                 }}>
-                  {diagnosticResult.is_intrusion ? '🚨 ATTACK DETECTED' : '✅ NO ATTACK DETECTED'}
+                  {diagnosticResult.is_intrusion ? 'ATTACK DETECTED' : 'NO ATTACK DETECTED'}
                 </div>
                 <div style={{
                   marginTop: '0.5rem',
@@ -545,7 +527,7 @@ export default function InspectorTab({ globalThreshold }) {
                   fontWeight: 700,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  color: 'var(--color-muted)',
+                  color: 'var(--color-text-muted)',
                 }}>
                   {diagnosticResult.is_intrusion ? 'INTRUSION BLOCKED — THREAT CONFIRMED' : 'LEGITIMATE TRAFFIC — SESSION AUTHORIZED'}
                 </div>
@@ -553,20 +535,21 @@ export default function InspectorTab({ globalThreshold }) {
                   marginTop: '0.75rem',
                   display: 'inline-block',
                   padding: '0.25rem 0.75rem',
-                  background: 'var(--color-stock)',
+                  background: 'var(--color-graphite)',
                   border: '1px solid var(--color-border)',
+                  borderRadius: '2px',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.75rem',
                   fontWeight: 700,
-                  color: 'var(--color-muted)',
+                  color: 'var(--color-text-muted)',
                 }}>
                   ML CONFIDENCE: {diagnosticResult.threat_percentage}%
                 </div>
               </div>
 
               {/* Feature Attribution Drivers */}
-              <div>
-                <span className="broadside-field__label">TOP RISK FACTORS DETECTED:</span>
+              <div style={{ marginTop: '1.5rem' }}>
+                <span className="forge-spec__eyebrow">TOP RISK FACTORS DETECTED</span>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.5rem' }}>
                   {diagnosticResult.risk_factors.map((rf, idx) => (
                     <div
@@ -576,11 +559,12 @@ export default function InspectorTab({ globalThreshold }) {
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         padding: '0.5rem 0.75rem',
-                        border: 'var(--rule) solid var(--color-ink)',
-                        background: rf.level === 'danger' ? 'var(--color-signal)' : rf.level === 'warning' ? 'var(--color-stock)' : 'var(--color-bone)',
-                        color: rf.level === 'danger' ? '#fff' : 'var(--color-ink)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: '2px',
+                        background: rf.level === 'danger' ? 'rgba(239, 68, 68, 0.1)' : rf.level === 'warning' ? 'var(--color-slate)' : 'var(--color-graphite)',
+                        color: rf.level === 'danger' ? 'var(--color-signal)' : 'var(--color-text)',
                         fontFamily: 'var(--font-sans)',
-                        fontWeight: 700,
+                        fontWeight: 600,
                         fontSize: '0.85rem',
                       }}
                     >
@@ -595,35 +579,37 @@ export default function InspectorTab({ globalThreshold }) {
               <div
                 style={{
                   padding: '1rem',
-                  background: 'var(--color-bone)',
-                  border: 'var(--rule) solid var(--color-ink)',
+                  background: 'rgba(246, 90, 26, 0.05)',
+                  border: '1px solid var(--color-accent)',
+                  borderRadius: '4px',
+                  marginTop: '1.5rem'
                 }}
               >
-                <span className="broadside-field__label" style={{ color: 'var(--color-signal)' }}>
-                  RECOMMENDED INCIDENT RESPONSE:
+                <span className="forge-spec__eyebrow" style={{ color: 'var(--color-accent)' }}>
+                  RECOMMENDED INCIDENT RESPONSE
                 </span>
-                <p style={{ fontWeight: 700, fontSize: '0.95rem', marginTop: '0.25rem' }}>
+                <p style={{ fontWeight: 700, fontSize: '0.95rem', marginTop: '0.25rem', color: 'var(--color-text)' }}>
                   {diagnosticResult.recommended_action}
                 </p>
               </div>
 
               {/* Feature Vector Payload Inspection */}
-              <div style={{ background: 'var(--color-stock)', padding: '0.75rem', border: 'var(--rule) solid var(--color-ink)', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ 
+                background: 'var(--color-graphite)', 
+                padding: '0.75rem', 
+                border: '1px solid var(--color-border)', 
+                borderRadius: '4px',
+                fontSize: '0.75rem', 
+                fontFamily: 'var(--font-mono)',
+                marginTop: 'auto',
+                color: 'var(--color-text-muted)'
+              }}>
                 <div><strong>CONFIGURED EVENT:</strong> IP_Score={formData.ip_reputation_score} | Fails={formData.failed_logins} | Attempts={formData.login_attempts} | Proto={formData.protocol_type} | Packet={formData.network_packet_size}B</div>
               </div>
             </>
-          ) : (
-            <div style={{ padding: '3rem', textAlign: 'center' }}>Running diagnostic...</div>
-          )}
+          ) : null}
         </div>
-
-        <footer className="broadside-card__footer">
-          <span className="broadside-card__meta">PIPELINE: RANDOMFOREST (300 ESTIMATORS)</span>
-          <button type="button" className="broadside-card__action" onClick={() => runDiagnostic()}>
-            Re-Score
-          </button>
-        </footer>
-      </div>
+      </article>
 
     </div>
   );
