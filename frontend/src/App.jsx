@@ -33,7 +33,7 @@ export default function App() {
 
         <div className="masthead-main">
           <div className="masthead-brand">
-            <h1>CYBERSOC // THREAT MATRIX</h1>
+            <h1>CYBERSOC</h1>
             <div className="masthead-sub">
               Machine Learning Intrusion Detection System & Security Operations Console
             </div>
