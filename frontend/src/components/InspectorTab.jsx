@@ -305,6 +305,7 @@ export default function InspectorTab({ globalThreshold }) {
                 onChange={(e) => setFormData({ ...formData, ip_reputation_score: Number(e.target.value) })}
                 style={{ width: '100%', accentColor: 'var(--color-accent)', marginTop: '8px' }}
               />
+              <span className="forge-field__hint" style={{ marginTop: '4px' }}>Higher scores indicate the IP is present on malicious blacklists or VPN/proxy lists.</span>
             </div>
           </div>
 
@@ -382,6 +383,7 @@ export default function InspectorTab({ globalThreshold }) {
                       <option value="DES">DES (Weak Legacy Crypto)</option>
                       <option value="None">None (Unencrypted Plaintext)</option>
                     </select>
+                    <span className="forge-field__hint">AES is standard. None/DES flags legacy or script behavior.</span>
                   </div>
 
                   {/* Browser / Client */}
@@ -398,6 +400,7 @@ export default function InspectorTab({ globalThreshold }) {
                       <option value="Safari">Apple Safari</option>
                       <option value="Unknown">Unknown (Automated Script/Bot)</option>
                     </select>
+                    <span className="forge-field__hint">Unknown typically indicates automated bot activity.</span>
                   </div>
                 </div>
 
@@ -413,6 +416,7 @@ export default function InspectorTab({ globalThreshold }) {
                       <option value="UDP">UDP (Datagram)</option>
                       <option value="ICMP">ICMP (Ping)</option>
                     </select>
+                    <span className="forge-field__hint">TCP is standard web. UDP/ICMP often used in floods/scans.</span>
                   </div>
 
                   <div className="forge-field">
@@ -428,6 +432,7 @@ export default function InspectorTab({ globalThreshold }) {
                       onChange={(e) => setFormData({ ...formData, network_packet_size: Number(e.target.value) })}
                       style={{ width: '100%', accentColor: 'var(--color-text)' }}
                     />
+                    <span className="forge-field__hint">Normal: ~450B. Large payloads indicate exfiltration.</span>
                   </div>
 
                   <div className="forge-field">
@@ -444,6 +449,7 @@ export default function InspectorTab({ globalThreshold }) {
                       onChange={(e) => setFormData({ ...formData, session_duration: Number(e.target.value) })}
                       style={{ width: '100%', accentColor: 'var(--color-text)' }}
                     />
+                    <span className="forge-field__hint">Normal: &gt;100s. Short bursts imply automated attacks.</span>
                   </div>
                 </div>
 
