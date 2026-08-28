@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Query
-from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -310,6 +310,13 @@ def get_model_info():
 def get_dataset_stats():
     """Return statistics and exploratory distributions computed on cybersecurity_intrusion_data.csv."""
     return cached_stats
+
+@app.get("/api/download-dataset")
+def download_dataset():
+    """Download the full cybersecurity_intrusion_data.csv dataset."""
+    if not os.path.exists(DATASET_PATH):
+        raise HTTPException(status_code=404, detail="Dataset not found on server.")
+    return FileResponse(DATASET_PATH, media_type="text/csv", filename="cybersecurity_intrusion_data.csv")
 
 @app.post("/api/predict")
 def predict_event(event: LogEvent):

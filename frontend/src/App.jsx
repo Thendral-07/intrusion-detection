@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Sliders, Layers, Moon, Sun } from 'lucide-react';
+import { Shield, Sliders, Layers, Moon, Sun, Download } from 'lucide-react';
 import InspectorTab from './components/InspectorTab.jsx';
 import NotebookExplorerTab from './components/NotebookExplorerTab.jsx';
 
@@ -40,10 +40,21 @@ export default function App() {
           </div>
 
           <div className="masthead-telemetry">
+            <a
+              href="/api/download-dataset"
+              download
+              className="forge-btn forge-btn--ghost"
+              style={{ padding: '0 12px', color: 'var(--color-accent)' }}
+              title="Download Original Dataset"
+            >
+              <Download size={16} /> DATASET
+            </a>
+            
             <button
               className="forge-btn forge-btn--ghost"
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               style={{ padding: '0 8px', color: 'var(--color-text)' }}
+              title="Toggle Light/Dark Theme"
             >
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
@@ -129,7 +140,7 @@ export default function App() {
         }}
       >
         <div>
-          FORGE DESIGN SYSTEM // CYBERPUNK DEVELOPER AESTHETIC
+          FORGE DESIGN SYSTEM // SECURE DEFENSE AESTHETIC
         </div>
         <div>
           TRAINED EXCLUSIVELY ON <code>cybersecurity_intrusion_data.csv</code> & <code>cyber_security_step_by_step.ipynb</code>

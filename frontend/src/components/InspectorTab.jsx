@@ -150,22 +150,17 @@ export default function InspectorTab({ globalThreshold }) {
   const currentTier = getIpTierLabel(formData.ip_reputation_score);
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '1.5rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       
-      {/* Left: Interactive Forge Form */}
+      {/* Quick Scenarios */}
       <article className="forge-spec">
         <header className="forge-spec__bar">
-          <span className="forge-spec__id">01</span>
-          <span className="forge-spec__title">EVENT PARAMETER INSPECTOR</span>
-          <span className="forge-spec__status">SIMULATOR</span>
+          <span className="forge-spec__id">00</span>
+          <span className="forge-spec__title">QUICK PRESET SCENARIOS</span>
+          <span className="forge-spec__status">1-CLICK</span>
         </header>
-
-        <div className="forge-spec__body">
-          
-          {/* 1-Click Preset Attack Scenarios */}
-          <div>
-            <div className="forge-spec__eyebrow">QUICK ATTACK SCENARIOS</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', marginTop: '0.35rem' }}>
+        <div className="forge-spec__body" style={{ padding: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem' }}>
               <button
                 type="button"
                 className="forge-btn forge-btn--primary"
@@ -197,10 +192,21 @@ export default function InspectorTab({ globalThreshold }) {
                 Verified Safe
               </button>
             </div>
-          </div>
+        </div>
+      </article>
 
-          <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: '1.5rem 0' }} />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '1.5rem' }}>
+      
+      {/* Left: Interactive Forge Form */}
+      <article className="forge-spec">
+        <header className="forge-spec__bar">
+          <span className="forge-spec__id">01</span>
+          <span className="forge-spec__title">CUSTOM ATTACK PARAMETERS</span>
+          <span className="forge-spec__status">MANUAL SIMULATOR</span>
+        </header>
 
+        <div className="forge-spec__body">
+          
           {/* ================================================================= */}
           {/* PRIMARY FEATURE: IP REPUTATION (DEFAULT + SELECTIVE TIERS) */}
           {/* ================================================================= */}
@@ -610,7 +616,8 @@ export default function InspectorTab({ globalThreshold }) {
           ) : null}
         </div>
       </article>
-
+      
+      </div>
     </div>
   );
 }
