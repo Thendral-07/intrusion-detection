@@ -426,7 +426,9 @@ DIST_DIR = os.path.join(BASE_DIR, "frontend", "dist")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 
 if os.path.exists(DIST_DIR):
-    app.mount("/assets", StaticFiles(directory=os.path.join(DIST_DIR, "assets")), name="assets")
+    assets_dir = os.path.join(DIST_DIR, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
     if os.path.exists(STATIC_DIR):
         app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 elif os.path.exists(STATIC_DIR):
